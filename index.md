@@ -8,7 +8,7 @@
 
 It enables engineers and scientists to build complex industrial control panels and real-time data processing algorithms through a workflow that combines professional visual design with an immutable, safe programming model.
 
-[Download Beta](#) • [Technical Documentation](#) • [Gallery](#)
+[Download Beta](#) • [Technical Documentation](Docs) • [Gallery](#)
 
 ---
 
