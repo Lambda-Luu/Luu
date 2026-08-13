@@ -1,8 +1,8 @@
 # 📘 Luu Language Specification
 
-**Version:** 1.1.0  
+**Version:** 1.1.5  
 **Status:** Official Specification  
-**Last Updated:** 2026-07-25
+**Last Updated:** 2026-08-13
 
 ---
 
@@ -81,8 +81,32 @@ Dynamic, type-safe arrays. Lists are the primary way to handle signal buffers an
     *   `shuffled()`: Returns a new list with elements randomly shuffled.
     *   `take(n)`: Returns a new list containing the first n elements.
     *   `drop(n)`: Returns a new list containing all elements except the first n elements.
+    *   `distinct()`: Returns a new list containing only unique elements.
+    *   `distinctBy(selector)`: Returns a new list containing unique elements based on the result of the selector lambda.
     *   `sortWith(comparator)`: Sorts the list using the given comparator lambda.
     *   `toStream()`: Converts the list into a data stream.
+
+#### `Map<K, V>`
+Key-value collections for efficient data retrieval.
+*   **Creation:** `val registry = Map<String, Int>()`
+*   **Methods:**
+    *   `size()`: Returns the number of entries (Int).
+    *   `isEmpty()`: Returns true if the map is empty (Boolean).
+    *   `isNotEmpty()`: Returns true if the map is not empty (Boolean).
+    *   `get(key)`: Returns the value associated with the key, or `undef` if not found.
+    *   `add(key, value)`: Adds or updates a key-value pair.
+    *   `remove(key)`: Removes the entry for the specified key.
+    *   `clear()`: Removes all entries from the map.
+    *   `contains(key)`: Returns true if the map contains the specified key.
+    *   `keys()`: Returns a list containing all keys in the map.
+    *   `values()`: Returns a list containing all values in the map.
+    *   **Functional API:**
+        *   `forEach(action)`: Executes a lambda for each entry `(key, value)`.
+        *   `map(func)`: Transforms each entry into a list element.
+        *   `filter(predicate)`: Returns a new map with entries matching the condition.
+        *   `find(predicate)`: Returns the first `Entry` matching the condition.
+        *   `any(predicate)` / `all(predicate)` / `none(predicate)`: Logical checks across all entries.
+        *   `count(predicate)`: Counts entries matching the condition.
 
 ## 2. Control Flow and Decision Making
 
@@ -180,67 +204,31 @@ Luu eliminates the `this` keyword to simplify access and prevent scoping bugs.
 3.  **Class Context:** Finally, it checks properties and methods of the containing class automatically.
 *   **Result:** You just write the name of the property. No `this.myProperty` required.
 
-## 4. System Library: (`Sys`)
+---
+
+## 4. System Library: Basic (`Sys`)
 
 Common methods for I/O, UI access, and console output.
 
-*   **`Sys.findViewByTag<V>(tag: String): V`**: Retrieves a view instance defined in the editor by its tag.
-*   **`Sys.read<T>(path: String): List<T>`**: Reads data from a file and returns it as a List of type T.
-*   **`Sys.save(path: String, data: Any)`**: Saves data to a file at the specified path.
-*   **`Sys.print(msg: Any)`**: Prints a message to the console without a line break.
-*   **`Sys.println(msg: Any)`**: Prints a message to the console followed by a line break.
+*   **`findViewByTag<V>(tag: String): V`**: Retrieves a view instance defined in the editor by its tag.
+*   **`read<T>(path: String): List<T>`**: Reads data from a file and returns it as a List of type T. Supports JSON, CSV, and .doubles formats.
+*   **`save(path: String, data: Any)`**: Saves data to a file at the specified path.
+*   **`print(msg: Any)`**: Prints a message to the console without a line break.
+*   **`println(msg: Any)`**: Prints a message to the console followed by a line break.
 
 ---
 
-## 5. UI Components Reference
-
-UI components are retrieved via `Sys.findViewByTag<T>(tag)`. Once retrieved, they act as objects with the following methods:
-
-### 5.1 ButtonView
-*   **`setOnClickListener(listener: () -> Void)`**: Sets a callback for click events.
-
-### 5.2 KnobView & SliderView
-*   **`setValue(value: Double)`**: Sets the current numeric value.
-*   **`setOnValueChangeListener(listener: (Double) -> Void)`**: Sets a callback for value changes.
-*   **`toStream(): Stream<Double>`**: Returns a stream that emits values on every change.
-
-### 5.3 XYPadView
-*   **`setValues(x: Double, y: Double)`**: Sets the crosshair position (0.0 to 1.0).
-*   **`setOnValueChangeListener(listener: (Double, Double) -> Void)`**: Callback with new X and Y coordinates.
-
-### 5.4 DropdownMenuView & RadioButtonView
-*   **`setSelectedIndex(index: Int)`**: Selects an option by its index.
-*   **`setOnSelectionChangeListener(listener: (Int) -> Void)`**: Callback with the new selected index.
-
-### 5.5 LedView
-*   **`setOn(isOn: Boolean)`**: Controls the LED state.
-*   **`setColor(color: Int)`**: Changes the LED color.
-
-### 5.6 LedMatrixView
-*   **`setOn(row: Int, col: Int, isOn: Boolean)`**: Controls a specific LED.
-*   **`setMatrix(data: List<List<Boolean>>)`**: Updates the entire grid.
-*   **`setLedColor(color: Int)`**: Sets the color for the active LEDs.
-*   **`clear()`**: Turns off all LEDs.
-
-### 5.7 LevelMeterView & GaugeView
-*   **`setLevel(level: Double)`** / **`setValue(value: Double)`**: Updates the visual indicator.
-
-### 5.8 CanvasView
-*   **`addCircle(x: Double, y: Double, radius: Double, color: Int)`**: Draws a circle.
-*   **`addLine(x1: Double, y1: Double, x2: Double, y2: Double, color: Int, thickness: Int)`**: Draws a line.
-*   **`clear()`**: Clears the canvas.
-
----
-
-## 6. System Library: Math (`Sys.Math`)
+## 5. System Library: Math (`Sys.Math`)
 
 The `Math` module provides high-performance arithmetic and trigonometric functions.
 
-### 6.1 Constants
+### 5.1 Constants
 *   **`PI`**: The ratio of a circle's circumference to its diameter (~3.14159).
 *   **`E`**: Euler's number (~2.71828).
+*   **`C`**: Speed of light in m/s (299,792,458).
+*   **`G`**: Gravitational acceleration in m/s² (9.80665).
 
-### 6.2 Power and Logarithms
+### 5.2 Power and Logarithms
 *   **`abs(v: Double): Double`**: Returns the absolute value.
 *   **`sqrt(v: Double): Double`**: Square root.
 *   **`pow(v: Double, p: Double): Double`**: Raises `v` to the power of `p`.
@@ -248,213 +236,214 @@ The `Math` module provides high-performance arithmetic and trigonometric functio
 *   **`log10(v: Double): Double`**: Base-10 logarithm.
 *   **`ln(v: Double): Double`**: Natural logarithm (base `e`).
 
-### 6.3 Trigonometry (Radians)
+### 5.3 Trigonometry (Radians)
 All trigonometric functions expect angles in **radians**.
 *   **`sin(v)`, `cos(v)`, `tan(v)`**: Standard functions.
 *   **`asin(v)`, `acos(v)`, `atan(v)`**: Inverse functions.
 *   **`atan2(y: Double, x: Double): Double`**: Returns the angle theta from the conversion of rectangular coordinates (x, y) to polar coordinates.
 
-### 6.4 Rounding and Extremes
+### 5.4 Rounding and Extremes
 *   **`ceil(v)`, `floor(v)`, `round(v)`**: Standard rounding to the nearest integer.
 *   **`min(a, b)`, `max(a, b)`**: Returns the lesser or greater of two values.
+*   **`min(list)`, `max(list)`**: Returns the minimum or maximum value in a list.
 
-### 6.5 Advanced Math & Conversions
+### 5.5 Advanced Math & Conversions
 *   **`factorial(n: Int): Double`**: Computes `n!`.
 *   **`combinations(n: Int, k: Int): Double`**: Computes "n choose k".
+*   **`lerp(a, b, t)`**: Linear interpolation between `a` and `b` by factor `t`.
+*   **`map(v, inMin, inMax, outMin, outMax)`**: Maps a value from one range to another.
 *   **`toDb(amplitude: Double): Double`**: Converts linear amplitude to Decibels ($20 \cdot \log10(A)$).
 *   **`fromDb(db: Double): Double`**: Converts Decibels back to linear amplitude.
+*   **`rms(list): Double`**: Root Mean Square energy of a signal.
+*   **`normalize(list): List<Double>`**: Normalizes a list so the maximum absolute value is 1.0.
+*   **`magnitude(list): Double`**: Euclidean magnitude (norm) of a vector/list.
+
+### 5.6 Geometry & Coordinates
+*   **`polarToCartesian(r, theta): List<Double>`**: Converts polar to [x, y].
+*   **`cartesianToPolar(x, y): List<Double>`**: Converts [x, y] to [r, theta].
+*   **`dot(listA, listB): Double`**: Dot product of two vectors.
+*   **`cross3D(listA, listB): List<Double>`**: Cross product of two 3D vectors.
 
 ---
 
-## 7. System Library: DSP (`Sys.DSP`)
+## 6. System Library: DSP (`Sys.DSP`)
 
-The Digital Signal Processing module is the core of Luu's virtual instrumentation capabilities.
+Digital Signal Processing module for virtual instrumentation.
 
-### 7.1 Spectral and Frequency Analysis
-*   **`fft(data: List<Double>): List<Complex>`**: Computes the Fast Fourier Transform.
+### 6.1 Spectral Analysis
+*   **`fft(data: List<Double>): List<Complex>`**: Fast Fourier Transform.
 *   **`stft(data, windowSize, hopSize): List<List<Complex>>`**: Short-Time Fourier Transform. Returns a spectrogram.
-*   **`cepstrum(data): List<Double>`**: Computes the real cepstrum of a signal.
-*   **`hilbert(data): List<Complex>`**: Computes the analytic signal using the Hilbert transform.
+*   **`cepstrum(data): List<Double>`**: Real cepstrum.
+*   **`hilbert(data): List<Complex>`**: Analytic signal using Hilbert transform.
+*   **`spectralFlatness(data): Double`**: Measures the "flatness" of the spectrum (0.0=tonal, 1.0=white noise).
+*   **`flatnessCoefficient(magnitudes, start?, end?): Double`**: Low-level SFM calculation over a range of FFT bins.
 
-### 7.2 Signal Characterization
-*   **`peak(data): Int`**: Returns the index of the highest peak.
-*   **`findPeaks(data, threshold): List<Int>`**: Returns indices of all peaks above the threshold.
-*   **`envelope(data, windowSize): List<Double>`**: Computes the signal envelope.
-*   **`autocorrelation(data): List<Double>`**: Computes the autocorrelation sequence.
+### 6.2 Signal Characterization
+*   **`peak(data): Int`**: Index of the highest peak.
+*   **`peakValue(data): Double`**: Magnitude of the highest peak.
+*   **`findPeaks(data, threshold): List<Int>`**: Indices of all peaks above threshold.
+*   **`envelope(data, windowSize): List<Double>`**: RMS envelope.
+*   **`autocorrelation(data): List<Double>`**: Autocorrelation sequence.
 *   **`zcr(data): Double`**: Zero-Crossing Rate.
-*   **`zeroCrossings(data): List<Int>`**: Returns the indices where zero-crossings occur.
+*   **`zeroCrossings(data): List<Int>`**: Indices of zero-crossings.
 *   **`thd(data): Double`**: Total Harmonic Distortion.
 *   **`snr(data): Double`**: Signal-to-Noise Ratio in dB.
-*   **`crestFactor(data): Double`**: Ratio of peak values to RMS.
-*   **`riseTime(data, sampleRate): Double`**: Time taken for a signal to rise from 10% to 90% of its steady-state value.
+*   **`crestFactor(data): Double`**: Peak-to-RMS ratio.
+*   **`riseTime(data, sampleRate): Double`**: Time from 10% to 90% of steady-state.
 
-### 7.3 Signal Generation
-*   **`sinWave(n, freq, fs, phase, amp)`**: Generates `n` samples of a sine wave.
-*   **`squareWave(n, freq, fs, phase, amp)`**: Generates a square wave.
-*   **`triangleWave(n, freq, fs, phase, amp)`**: Generates a triangle wave.
-*   **`sawtoothWave(n, freq, fs, phase, amp)`**: Generates a sawtooth wave.
-*   **`whiteNoise(n, amp)`**: Generates Gaussian white noise.
-*   **`pinkNoise(n, amp)`**: Generates pink noise (1/f noise).
-*   **`chirp(n, f0, f1, fs, duration, amp)`**: Generates a frequency-swept signal.
+### 6.3 Signal Generation
+*   **`sinWave(n, freq, fs, phase, amp)`**: Sine wave generation.
+*   **`squareWave(n, freq, fs, phase, amp)`**: Square wave generation.
+*   **`triangleWave(n, freq, fs, phase, amp)`**: Triangle wave generation.
+*   **`sawtoothWave(n, freq, fs, phase, amp)`**: Sawtooth wave generation.
+*   **`whiteNoise(n, amp)`**: Gaussian white noise.
+*   **`pinkNoise(n, amp)`**: 1/f noise.
+*   **`chirp(n, f0, f1, fs, duration, amp)`**: Frequency-swept signal.
 
-### 7.4 Pitch Detection and Estimation
-*   **`yin(data, fs, threshold): Double`**: Pitch detection using the YIN algorithm.
-*   **`mpm(data, fs, threshold): Double`**: Pitch detection using the McLeod Pitch Method.
-*   **`amdf(data, fs, minFreq, maxFreq): Double`**: Average Magnitude Difference Function.
-*   **`hps(magnitudeSpectrum, downsampleFactors): Int`**: Harmonic Product Spectrum for fundamental frequency estimation.
-
-### 7.5 Windows and Transforms
-*   **`hann(n): List<Double>`**: Generates a Hann window of length `n`.
-*   **`blackman(n): List<Double>`**: Generates a Blackman window of length `n`.
-*   **`dwt(data, levels): List<Double>`**: Discrete Wavelet Transform.
-*   **`convolve(signal, kernel): List<Double>`**: Performs linear convolution of two signals.
-*   **`resample(data, newSize): List<Double>`**: Changes the sampling rate of the signal.
-
-### 7.6 Parametric Estimation (Subspace methods)
-*   **`music(data, m, numSignals): List<Double>`**: Multiple Signal Classification algorithm for frequency estimation.
-*   **`esprit(data, m, numSignals): List<Double>`**: Estimation of Signal Parameters via Rotational Invariance Techniques.
+### 6.4 Pitch Detection
+*   **`yin(data, fs, threshold)`**: YIN algorithm.
+*   **`mpm(data, fs, threshold)`**: McLeod Pitch Method.
+*   **`amdf(data, fs, minFreq, maxFreq)`**: Average Magnitude Difference Function.
+*   **`hps(magnitudeSpectrum, downsampleFactors)`**: Harmonic Product Spectrum.
 
 ---
 
-## 8. System Library: Filters (`Sys.Filter`)
+## 7. System Library: Filters (`Sys.Filter`)
 
-The `Filter` module provides digital signal filtering algorithms to reduce noise and isolate components.
+Digital filtering algorithms.
 
-### 8.1 Smoothing and Averages
-*   **`ema(data, alpha): List<Double>`**: Exponential Moving Average. `alpha` (0.0 to 1.0) controls the smoothing factor.
-*   **`sma(data, window): List<Double>`**: Simple Moving Average with a sliding window of the specified size.
-*   **`median(data, window): List<Double>`**: Median filter, excellent for removing "spike" noise (outliers).
-
-### 8.2 Frequency Filters
-*   **`lowPass(data, cutoff, fs): List<Double>`**: First-order low-pass filter.
-*   **`highPass(data, cutoff, fs): List<Double>`**: First-order high-pass filter.
-*   **`butterworthLowPass(data, cutoff, fs): List<Double>`**: Second-order Butterworth low-pass filter for a flatter response.
-*   **`butterworthHighPass(data, cutoff, fs): List<Double>`**: Second-order Butterworth high-pass filter.
-*   **`notch(data, freq, fs, q): List<Double>`**: Rejects a narrow band of frequencies around `freq` (e.g., 50Hz hum).
-
-### 8.3 Advanced Filters
-*   **`kalman(data, q, r, initEst, initErr): List<Double>`**: Simple 1D Kalman filter for optimal estimation under noise.
+*   **`ema(data, alpha)`**: Exponential Moving Average.
+*   **`sma(data, window)`**: Simple Moving Average.
+*   **`median(data, window)`**: Median filter (spike removal).
+*   **`lowPass(data, cutoff, fs)`**: 1st order Low-pass.
+*   **`highPass(data, cutoff, fs)`**: 1st order High-pass.
+*   **`butterworthLowPass(data, cutoff, fs)`**: 2nd order Butterworth.
+*   **`butterworthHighPass(data, cutoff, fs)`**: 2nd order Butterworth.
+*   **`notch(data, freq, fs, q)`**: Notch filter.
+*   **`kalman(data, q, r, initEst, initErr)`**: 1D Kalman filter.
 
 ---
 
-## 9. System Library: Statistics (`Sys.Stats`)
+## 8. System Library: Statistics (`Sys.Stats`)
 
-The `Stats` module provides a comprehensive suite of tools for data characterization and hypothesis testing, essential for analyzing experimental results.
-
-### 9.1 Descriptive Statistics
-*   **`mean(data: List<Double>): Double`**: Arithmetic average.
-*   **`median(data): Double`**: The middle value of the sorted data set.
-*   **`stdDev(data): Double`**: Standard deviation (measure of dispersion).
-*   **`variance(data): Double`**: Variance of the sample.
-*   **`kurtosis(data)` & `skewness(data)`**: Measures of the "shape" of the distribution.
-*   **`linearRegression(x, y)`**: Returns `[slope, intercept]` for the best-fit line.
-
-### 9.2 Inferential & Testing
-*   **`welchTTest(a, b): Double`**: Performs a T-Test for two samples with potentially unequal variances. Returns the p-value.
-*   **`percentile(data, p): Double`**: Returns the value below which `p` percent of the data falls.
-*   **`confidenceInterval(data, level)`**: Returns the [lower, upper] bounds for a given confidence level (e.g., 0.95).
+*   **`mean(data)`**, **`variance(data)`**, **`stdDev(data)`**, **`rms(data)`**: Descriptive stats.
+*   **`histogram(data, bins)`**: Returns frequency counts per bin.
+*   **`entropy(data)`**: Shannon entropy.
+*   **`percentile(data, p)`**: Value at percentile `p`.
+*   **`welchTTest(a, b)`**: P-value for Welch's T-test.
+*   **`correlationCoefficient(a, b)`**: Pearson's R.
+*   **`linearRegression(x, y)`**: Returns [slope, intercept].
+*   **`confidenceInterval(data)`**: Returns [lower, upper] at 95%.
+*   **`skewness(data)`**, **`kurtosis(data)`**: Shape metrics.
 
 ---
 
-## 10. System Library: Numeric (`Sys.Numeric`)
+## 9. System Library: Numeric (`Sys.Numeric`)
 
-Advanced calculus and mathematical modeling using high-precision numerical methods.
-
-### 10.1 Calculus & ODEs
-*   **`integrate(data, fs): List<Double>`**: Cumulative trapezoidal integration.
-*   **`differentiate(data, fs): List<Double>`**: Central difference differentiation.
-*   **`rungeKutta4(y0, t0, tEnd, h, f)`**: Solves a first-order Ordinary Differential Equation using the RK4 method.
-
-### 10.2 Modeling & Fitting
-*   **`linearRegression(x, y)`**: Returns `[slope, intercept]` for the best-fit line.
-*   **`polyFit(x, y, degree)`**: Fits a polynomial of the specified degree. Returns coefficients from highest power to constant.
-*   **`spline(x, y, targetX)`**: Natural Cubic Spline interpolation. Smooths data through points.
-*   **`parabolicPeak(y0, y1, y2)`**: Estimates the sub-sample peak position and amplitude using three points.
-
-### 10.3 Optimization
-*   **`findRoot(a, b, tol, f)`**: Finds the value $x$ where $f(x) = 0$ using the bisection method.
-*   **`minimize(a, b, tol, f)`**: Finds the local minimum of a function within a range.
+*   **`integrate(data, fs)`**: Trapezoidal integration.
+*   **`differentiate(data, fs)`**: Central difference.
+*   **`detrend(data)`**: Removes linear trend.
+*   **`polyFit(x, y, degree)`**: Polynomial least-squares fitting.
+*   **`spline(x, y, targetX)`**: Natural Cubic Spline interpolation.
+*   **`rungeKutta4(y0, t0, tEnd, h, f)`**: ODE solver.
+*   **`findRoot(a, b, tol, f)`**: Bisection root finding.
+*   **`minimize(a, b, tol, f)`**: Golden-section minimization.
+*   **`parabolicPeak(y0, y1, y2)`**: Sub-sample peak estimation.
 
 ---
 
-## 11. System Library: Linear Algebra (`Sys.Matrix`)
+## 10. System Library: Geometry (`Sys.Geo`)
 
-The `Matrix` class provides support for matrix operations, essential for advanced data processing and physics simulations.
+Geometry types accessible as `Sys.<Type>`.
 
-### 11.1 Creation
-*   **`Matrix(rows: Int, cols: Int, data: List<Double>)`**: Creates a new matrix. The data list must have exactly `rows * cols` elements in row-major order.
-
-### 11.2 Operations
-*   **`add(other: Matrix): Matrix`**: Returns the sum of two matrices.
-*   **`multiply(other: Matrix): Matrix`**: Returns the matrix product.
-*   **`det(): Double`**: Calculates the determinant of a square matrix.
-*   **`inv(): Matrix`**: Calculates the inverse of a square matrix.
-*   **`eigenvalues(): List<Double>`**: Estimates real eigenvalues using the QR algorithm.
-
-### 11.3 Properties
-*   **`rows(): Int`**: Returns the number of rows.
-*   **`cols(): Int`**: Returns the number of columns.
+*   **`Point(x, y, z?)`**: `p.distanceTo(other)`.
+*   **`Vector(x, y, z?)`**: `v.length()`, `v.normalize()`, `v.dot(other)`, `v.cross(other)`.
+*   **`Line(origin: Point, dir: Vector)`**: `line.pointAt(t)`, `line.distanceTo(p)`, `line.intersect2D(other)`.
+*   **`Plane(p: Point, normal: Vector)`**: `plane.distanceTo(p)`, `plane.intersect(line)`.
+*   **`Circle(center: Point, r: Double)`**: `c.contains(p)`, `c.intersects(other)`.
+*   **`Sphere(center: Point, r: Double)`**: `s.contains(p)`.
+*   **`Matrix4()`**: 4x4 matrix for transforms. Supports `identity()`, `translate()`, `rotateX/Y/Z()`, `scale()`, `multiply()`, `mapPoint()`.
 
 ---
 
-## 12. System Library: Geometry (`Sys.Geo`)
+## 11. System Library: Hardware (`Sys.DAQmx`)
 
-Computational geometry for spatial analysis and 3D projection.
-
-*   **Types**:
-    *   `Point(x, y, z)`: Spatial coordinates. `p.distanceTo(other)`.
-    *   `Vector(x, y, z)`: Direction and magnitude. `v.length()`, `v.normalize()`, `v.dot(other)`, `v.cross(other)`.
-    *   `Line(origin, dir)`: `line.pointAt(t)`, `line.distanceTo(p)`, `line.intersect2D(other)`.
-    *   `Plane(p, normal)`: `plane.distanceTo(p)`, `plane.intersect(line)`, `plane.contains(p)`.
-    *   `Circle(center, r)`: `c.contains(p)`, `c.intersects(other)`, `c.intersectionArea(other)`.
-    *   `Sphere(center, r)`: `s.contains(p)`, `s.intersects(other)`.
-    *   `Matrix4`: 4x4 matrix for affine transforms.
-        *   `identity()`, `translate(x, y, z)`, `scale(x, y, z)`, `rotateX/Y/Z(rad)`, `skew(sx, sy)`.
-        *   `multiply(other)`, `mapPoint(p)`.
-        *   `perspective(fov, aspect, near, far)`: 3D to 2D projection matrix.
-
-## 13. System Library: Hardware (`Sys.DAQmx`)
-
-Direct control of National Instruments devices (Desktop only).
-
-*   `Sys.DAQmx()`: Creates a new DAQ controller instance.
-*   `daq.writeDigitalLine(deviceLine, state)`: Writes `true/false` to a specific channel (e.g., `"Dev1/port0/line0"`).
+*   **`DAQmx()`**: Creates a controller instance.
+    *   `daq.writeDigitalLine(deviceLine, state)`: Writes to a NI-DAQmx digital channel.
 
 ---
 
-## 14. Real-Time Data Streams (`Sys.Stream`)
+## 12. UI Components Reference
 
-The `Stream` module is the core engine for reactive programming in Luu. It handles the continuous flow of data from generators or hardware to the UI.
+UI components are retrieved via `Sys.findViewByTag<T>(tag)`.
 
-### 14.1 Source Generators
+### 12. UI Components Reference
+
+UI components are retrieved via `Sys.findViewByTag<T>(tag)`. You can find the exact class name (`T`) of a component by selecting it in the visual editor and looking at the **"type"** property in the attributes panel.
+
+### 12.1 ButtonView
+*   **`setOnClickListener(listener: () -> Void)`**: Sets a callback for click events.
+
+### 12.2 KnobView & SliderView
+*   **`setValue(value: Double)`**: Sets the current numeric value.
+*   **`setOnValueChangeListener(listener: (Double) -> Void)`**: Sets a callback for value changes.
+*   **`toStream(): Stream<Double>`**: Returns a stream that emits values on every change.
+
+### 12.3 XYPadView
+*   **`setValues(x: Double, y: Double)`**: Sets the crosshair position (0.0 to 1.0).
+*   **`setOnValueChangeListener(listener: (Double, Double) -> Void)`**: Callback with new X and Y coordinates.
+
+### 12.4 DropdownMenuView & RadioButtonView
+*   **`setSelectedIndex(index: Int)`**: Selects an option by its index.
+*   **`setOnSelectionChangeListener(listener: (Int) -> Void)`**: Callback with the new selected index.
+
+### 12.5 LedView
+*   **`setOn(isOn: Boolean)`**: Controls the LED state.
+*   **`setColor(color: Int)`**: Changes the LED color.
+
+### 12.6 LedMatrixView
+*   **`setOn(row: Int, col: Int, isOn: Boolean)`**: Controls a specific LED.
+*   **`setMatrix(data: List<List<Boolean>>)`**: Updates the entire grid.
+*   **`setLedColor(color: Int)`**: Sets the color for the active LEDs.
+*   **`clear()`**: Turns off all LEDs.
+
+### 12.7 Plot Y-ts & Plot XY
+*   **`getChannel(name: String): Channel`**: Retrieves a channel instance for data feeding.
+    *   `channel.setValue(v: Double)`: Adds a single point.
+    *   `channel.setValue(list: List<Double>)`: Adds multiple points.
+    *   `channel.setStrokeSize(size: Int)`: Updates line thickness.
+
+---
+
+## 13. Real-Time Data Streams (`Sys.Stream`)
+
+### 13.1 Source Generators
 *   **`sine(freq, amp)`**: Continuous sine wave generator.
-*   **`audioIn()`**: Streams data from the system's default microphone.
+*   **`audioIn(sampleRate?, bufferSize?)`**: Streams data from the microphone.
 *   **`periodic(millis)`**: Emits a tick event every X milliseconds.
 
-### 14.2 Operators (Pipelines)
-*   **`.delay(ms)`**: Throttles the data flow to the specified rate.
-*   **`.map { v -> ... }`**: Transforms each data point in the stream.
-*   **`.window(size)`**: Groups individual points into lists (buffers) for batch processing (e.g., for FFT).
+### 13.2 Operators (Pipelines)
+*   **`.delay(ms)`**: Throttles the data flow.
+*   **`.map { v -> ... }`**: Transforms each data point.
+*   **`.onEach { v -> ... }`**: Executes logic without transforming data.
+*   **`.filter { v -> ... }`**: Emits only elements that satisfy the given condition.
+*   **`.skip(n)`**: Skips the first `n` elements.
+*   **`.take(n)`**: Emits only the first `n` elements and stops.
+*   **`.step(n)`**: Emits 1 out of every `n` elements.
+*   **`.buffer(count, skip?)`**: Groups points into lists.
+*   **`.zip(other)`**: Combines elements from two streams into Pairs.
+*   **`.transform { source, emitter -> ... }`**: Custom transformation logic.
 
-### 14.3 Sinks (Consumption)
-*   **`.collect { v -> ... }`**: The final step in a pipeline. Executes logic for every value received. This is where you usually update UI components.
+### 13.3 Sinks (Consumption)
+*   **`.collect { v -> ... }`**: Final step to consume values and update UI.
 
 ---
 
-## 15. IDE Productivity and Shortcuts
+## 14. File Formats Reference
 
-The Luu IDE includes several features to speed up your instrumentation workflow.
+Luu supports several text-based formats for data persistence.
 
-### 15.1 Smart Autocomplete
-*   **Tab Key**: When a red underline (error) appears, press `Tab` to automatically insert the first suggested correction. If the suggestion is a function, the cursor will be placed inside the parentheses.
-*   **4-Space Indent**: Pressing `Tab` without active suggestions will insert 4 spaces for consistent code formatting.
-
-### 15.2 Keyboard Shortcuts
-*   **`Ctrl + N`** (or `Cmd + N`): Create a new file in the current directory.
-*   **`Ctrl + P`** (or `Cmd + P`): Launch the Project Wizard to create a new instrumentation project.
-*   **`Ctrl + S`**: Manual save (though the IDE performs auto-save every 5 seconds).
-*   **`Ctrl + Click`** (on a symbol): Jump to the definition of a variable or function.
-
-### 15.3 File Types
-*   **`.lu`**: Luu logic scripts. Contains your `fun main()` and data processing pipelines.
-*   **`.vw`**: Visual View files. These are managed by the Visual Editor and should not be edited manually.
+*   **CSV (.csv)**: Comma-separated values.
+*   **JSON (.json)**: Standard object notation.
+*   **DOUBLES (.doubles)**: Comma-separated decimal numbers.
+*   **DOUBLES_TIME (.dt)**: `time:value` pairs.
