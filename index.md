@@ -8,6 +8,10 @@
 
 It enables engineers and scientists to build complex industrial control panels and real-time data processing algorithms through a workflow that combines professional visual design with an immutable, safe programming model.
 
+<video controls width="100%">
+  <source src="/videos/luu_intro.mp4" type="video/mp4">
+</video>
+
 [Download Beta](#) • [Technical Documentation](Docs) • [Gallery](#)
 
 ---
