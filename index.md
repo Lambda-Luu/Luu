@@ -12,7 +12,7 @@ It enables engineers and scientists to build complex industrial control panels a
   <source src="/Luu/videos/luu_intro.mp4" type="video/mp4">
 </video>
 
-[Download Beta](#) • [Technical Documentation](Docs) • [Gallery](#)
+[Download Beta](#) • [Technical Documentation](Docs) • [Gallery](Gallery)
 
 ---
 
