@@ -1,0 +1,22 @@
+val fr: Double = 44100.0/8192  
+
+fun main() {
+    
+    val reader = AudioRecorder(44100.0,8192)
+    val signal=reader.read().publish()
+    
+    val signalPlot= findViewByTag<PlotYtsView>("signal")
+    val signalCh1=signalPlot.getChannel("ch1")
+    signal.collect{v-> signalCh1.ys(v)}
+
+    val fftPlot = findViewByTag<PlotYtsView>("fft")    
+    val fftCh1=fftPlot.getChannel("ch1")
+
+    val fft = signal
+    .map{v-> butterworthHighPass(v,80.0,44100.0)}
+    .map{v-> fft(v).subList(0,v.size()/2).map{v-> v.abs()} }.publish()
+    
+    val peakText= findViewByTag<TextView>("peak")
+    fft.collect{v-> fftCh1.ys(v) }
+    fft.map{v-> peak(v)*fr}.collect{v-> peakText.setText(v.format(1) + "hz") }
+}
